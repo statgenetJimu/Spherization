@@ -1,6 +1,15 @@
 library(mvtnorm)
 library(TruncatedNormal)
 
+calc.marg<-function (A){
+    d <- dim(A)
+    ret <- list()
+    for (i in 1:length(d)) {
+        ret[[i]] <- apply(A, i, sum)
+    }
+    ret
+}
+
 make.exp.table <- function(A){
   n <- sum(A)
   marg <- calc.marg(A)

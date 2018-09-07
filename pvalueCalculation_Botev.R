@@ -1,6 +1,7 @@
 library(mvtnorm)
 library(TruncatedNormal)
 
+###Calculates marginal count of a contingency table "A"
 calc.marg<-function (A){
     d <- dim(A)
     ret <- list()
@@ -10,6 +11,7 @@ calc.marg<-function (A){
     ret
 }
 
+###Calculates expected table of a contingency table "A"
 make.exp.table <- function(A){
   n <- sum(A)
   marg <- calc.marg(A)
@@ -20,6 +22,7 @@ make.exp.table <- function(A){
   tmp
 }
 
+###Calculation of the rotation matrix.
 make.simplex <- function(k){
   ret <- matrix(0,k,k)
   for(i in 1:(k-1)){
@@ -47,6 +50,21 @@ make.simplex.multi <- function(r){
   X
 }
 
+###Calculates the index vector to define the positions of zero and non-zero elements produced from the rotation.
+arrive.index <- function(d){
+  n <- prod(d-1)
+  x <- numeric(n)
+  ind <- 1
+    for(i in 1:(d[2]-1)){
+      for(j in 1:(d[1]-1)){
+      x[ind] <- (i-1)*d[1]+j
+      ind <- ind+1
+    }
+  }
+  x
+}
+
+
 calc.rotate <- function(table){
   dim <- dim(table)
   exp.table <- make.exp.table(table)
@@ -68,24 +86,13 @@ calc.rotate <- function(table){
   return(list(P=P,Pinv=Pinv))
 }
 
+###Calculates the test vector.
 make.test.vecs <- function(rotation,tests){
   test.vecs <- tests %*% rotation
   L.test.vecs <- sqrt(apply(test.vecs^2,1,sum))
   test.vecs / L.test.vecs
 }
 
-arrive.index <- function(d){
-  n <- prod(d-1)
-  x <- numeric(n)
-  ind <- 1
-    for(i in 1:(d[2]-1)){
-      for(j in 1:(d[1]-1)){
-      x[ind] <- (i-1)*d[1]+j
-      ind <- ind+1
-    }
-  }
-  x
-}
 
 pmway.table.null.botev <- function(stat,table,tests,lower.tail,one.side,n){
   d <- dim(table)
@@ -96,7 +103,7 @@ pmway.table.null.botev <- function(stat,table,tests,lower.tail,one.side,n){
   
   sig <- test.vecs %*% t(test.vecs)
   u <- rep(stat,nrow(sig))
-  pr <- 1 - mvNcdf(-u,u,sig,100)$prob
+  pr <- 1 - mvNcdf(-u,u,sig,n)$prob
   
   if(lower.tail){
     if(one.side){
@@ -114,6 +121,7 @@ pmway.table.null.botev <- function(stat,table,tests,lower.tail,one.side,n){
   ret
 }
 
+###Calculates the probability of type I error for the Sph-Btv method.
 pmway.table.null.multi.botev <- function(stat,table,tests,lower.tail,one.side,n){
   d <- dim(table)
   df <- prod(d-1)
@@ -126,7 +134,7 @@ pmway.table.null.multi.botev <- function(stat,table,tests,lower.tail,one.side,n)
   pr <- numeric(length(stat))
   for(i in 1:length(stat)){
     u <- rep(stat[i],nrow(sig))
-    pr[i] <- 1 - mvNcdf(-u,u,sig,100)$prob
+    pr[i] <- 1 - mvNcdf(-u,u,sig,n)$prob
   }
   if(lower.tail){
     if(one.side){

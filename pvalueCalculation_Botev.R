@@ -1,7 +1,7 @@
 library(mvtnorm)
 library(TruncatedNormal)
 
-###Calculates marginal count of a contingency table "A"
+###Calculates marginal counts of a contingency table "A".
 calc.marg<-function (A){
     d <- dim(A)
     ret <- list()
@@ -11,7 +11,7 @@ calc.marg<-function (A){
     ret
 }
 
-###Calculates expected table of a contingency table "A"
+###Calculates expected table of a contingency table "A".
 make.exp.table <- function(A){
   n <- sum(A)
   marg <- calc.marg(A)
@@ -63,7 +63,6 @@ arrive.index <- function(d){
   }
   x
 }
-
 
 calc.rotate <- function(table){
   dim <- dim(table)

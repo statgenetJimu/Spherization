@@ -1,7 +1,7 @@
 library(mvtnorm)
 library(TruncatedNormal)
 
-###Calculates marginal counts of a contingency table "A".
+# Calculates marginal counts of a contingency table "A".
 calc.marg<-function (A){
     d <- dim(A)
     ret <- list()
@@ -11,7 +11,7 @@ calc.marg<-function (A){
     ret
 }
 
-###Calculates expected table of a contingency table "A".
+# Calculates expected table of a contingency table "A".
 make.exp.table <- function(A){
   n <- sum(A)
   marg <- calc.marg(A)
@@ -22,7 +22,8 @@ make.exp.table <- function(A){
   tmp
 }
 
-###Calculation of the rotation matrix.
+# Calculates a k × k simplex-rotation matrix for an integer k.
+# Example: For a 2×3 table, k = 2,3. For each k, this function returns two rotation matrices with dimensions, 2×2 and 3×3, respectively.
 make.simplex <- function(k){
   ret <- matrix(0,k,k)
   for(i in 1:(k-1)){
@@ -39,6 +40,9 @@ make.simplex <- function(k){
   ret
 }
 
+# Calculates the Kronecker product of multiple simplex-rotation matrices.
+# r: a vector of numbers of the levels of the variables of a contingency table.
+# Example: For a 2×3 table, r = c(2,3), this function returns a 6×6 matrix.
 make.simplex.multi <- function(r){
   X <- make.simplex(r[1])
   k <- length(r)
@@ -50,7 +54,8 @@ make.simplex.multi <- function(r){
   X
 }
 
-###Calculates the index vector to define the positions of zero and non-zero elements produced from the rotation.
+# Calculates the index vector to define the positions of zero and non-zero elements produced from the rotation.
+# Example: For a 2×3 table, d = c(2,3).
 arrive.index <- function(d){
   n <- prod(d-1)
   x <- numeric(n)
@@ -64,6 +69,8 @@ arrive.index <- function(d){
   x
 }
 
+# Spherization of table.
+# Returns the matrices that will transfer test vectors to the df-dimensional vectors. 
 calc.rotate <- function(table){
   dim <- dim(table)
   exp.table <- make.exp.table(table)
@@ -85,7 +92,9 @@ calc.rotate <- function(table){
   return(list(P=P,Pinv=Pinv))
 }
 
-###Calculates the test vector.
+# Calculates the df-dimensional test vectors.
+# tests: a list of tables representing test models.
+# rotation: the spherization information from the “calc.rotate” function.
 make.test.vecs <- function(rotation,tests){
   test.vecs <- tests %*% rotation
   L.test.vecs <- sqrt(apply(test.vecs^2,1,sum))
@@ -120,7 +129,12 @@ pmway.table.null.botev <- function(stat,table,tests,lower.tail,one.side,n){
   ret
 }
 
-###Calculates the probability of type I error for the Sph-Btv method.
+# Calculates the probability of type I error (α) for the Sph-Btv method.
+# stat: the χ^2-value(s) of the table from the proportion trend test.
+# table: the contingency table.
+# lower.tail: logical; if TRUE, probabilities are P[X≤x], otherwise, P[X>x].
+# one.side: logical; if TRUE, the test vectors indicate one-sided test, otherwise, two-sided.
+# n: the number of Monte Carlo samples.
 pmway.table.null.multi.botev <- function(stat,table,tests,lower.tail,one.side,n){
   d <- dim(table)
   df <- prod(d-1)

@@ -129,7 +129,7 @@ pmway.table.null.botev <- function(stat,table,tests,lower.tail,one.side,n){
   ret
 }
 
-# Calculates the p-values for the Sph-Btv method.
+# Calculates the p-value(s) for the Sph-Btv method.
 # stat: the χ^2-value(s) of the table from the proportion trend test.
 # table: the contingency table.
 # lower.tail: logical; if TRUE, probabilities are P[X≤x], otherwise, P[X>x].
